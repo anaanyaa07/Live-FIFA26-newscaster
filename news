@@ -1,0 +1,161 @@
+{
+  "name": "Football latest news",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Football news for today",
+        "formDescription": "Hit me",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7354857e-8e4a-4ba7-8edf-5f8010c35ec7",
+      "name": "On form submission",
+      "webhookId": "82f4c129-13c1-4a20-8205-e7002b370a70"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Give me the latest happenings in the ongoing fifa football tournaments. Today's date is {{ $now.toFormat('cccc, MMMM d, yyyy') }}.",
+        "options": {
+          "systemMessage": "\nFormat your response as a friendly newsletter called \"⚽ Football Companion\" for readers who don't know much about football. Structure it exactly like this:\n\n1. Title: \"⚽ Football Companion\" with a one-line friendly tagline, and today's date.\n2. A \"🔥 TOP STORY\" section covering the most important recent result or upcoming match, with the score, scorers, and minute of each goal.\n3. Inline explainer boxes (marked with 📖) that define any football term a beginner wouldn't know — e.g. penalty, striker, defender, semi-final — right after you use it.\n4. A \"🔴 TODAY'S MATCH\" or \"🔮 WHAT HAPPENS NEXT\" section previewing upcoming fixtures with date, time, and venue.\n5. Use emojis, short punchy sentences, and bold for scores and team names. Keep the tone warm and welcoming, like explaining football to a friend who's never watched a match.\n\nOnly use facts confirmed by the SerpApi search tool. Never invent scores, names, or dates.\n\nReturn HTML only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4261825d-3ae2-4cbd-9600-204b983cffe4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        208,
+        208
+      ],
+      "id": "888ba2ae-968a-4231-bce7-bdc9c1e0f732",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "Jbd63yqgnJguuMsk",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "respondWith": "showText",
+        "responseText": "={{ $json.output }}"
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "9cb2ca44-4ddb-4d9b-8c9b-23e97af682e3",
+      "name": "Form",
+      "webhookId": "be21e8b9-d646-4532-8eed-16a01155718f"
+    },
+    {
+      "parameters": {
+        "q": "={{ $fromAI('Search_Query__q_', ``, 'string') }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApiTool",
+      "typeVersion": 1,
+      "position": [
+        368,
+        208
+      ],
+      "id": "f88ad0c8-8ed1-4f04-9365-ca27646e1967",
+      "name": "Google search in SerpApi",
+      "credentials": {
+        "serpApi": {
+          "id": "M8fATmzIYicKuG4E",
+          "name": "SerpAPI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search in SerpApi": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "868be7e9-2bcf-4120-a9da-062c8f092a85",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c12266470f05ca26629c4cef4ad5f513e183f8e33522a703741ebf969b297747"
+  },
+  "nodeGroups": [],
+  "id": "6T9G7ZJwp2XJyMDb",
+  "tags": []
+}
